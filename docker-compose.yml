@@ -1,0 +1,51 @@
+---
+version: "3"
+services:
+  backend:
+    build: 
+      context: backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - database
+    networks:
+      - app_net
+  
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8890:8890"
+    networks:
+      - app_net
+
+  nginx:
+    build: 
+      context: nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - app_net
+  
+  database:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27020:27017"
+    volumes:
+      - mongodb_data_count:/data/db
+    networks:
+      - app_net
+
+volumes:
+  mongodb_data_count:
+
+networks:
+  app_net:
+    driver: bridge
